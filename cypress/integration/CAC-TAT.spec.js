@@ -13,7 +13,7 @@ describe('Central de Atendimento ao Cliente TAT', function() {
     })
 
     Cypress._.times(5, function(){
-        it.only('Preenche os campos obrigatórios e envia o formulário', function(){
+        it('Preenche os campos obrigatórios e envia o formulário', function(){
 
             const longText = 'Ótimo, adore otimo, muito bom maluco, sensacional, eu adorei a forma de como é trabalhar, sensácional!!'
             //cy.clock está parando o relogio do navegador
@@ -156,6 +156,41 @@ describe('Central de Atendimento ao Cliente TAT', function() {
 
     it('acessa a página da política de privacidade removendo o target e então clicanco no link', function(){
         cy.get('#privacy a').invoke('removeAttr', 'target').click()
+    })
+    it('exibe e esconde as mensagens de sucesso e erro usando o .invoke', function()  {
+        cy.get('.success')
+          .should('not.be.visible')
+          .invoke('show')
+          .should('be.visible')
+          .and('contain', 'Mensagem enviada com sucesso.')
+          .invoke('hide')
+          .should('not.be.visible')
+        cy.get('.error')
+          .should('not.be.visible')
+          .invoke('show')
+          .should('be.visible')
+          .and('contain', 'Valide os campos obrigatórios!')
+          .invoke('hide')
+          .should('not.be.visible')
+      })
+    
+    it('preenche a area de texto usando o comando invoke', function(){
+        const longText = Cypress._.repeat('0123456789', 20)
+
+        cy.get('#open-text-area').invoke('val', longText).should('have.value', longText)
+    })
+    
+    it('faz uma requisição HTTP', function (){
+        cy.request('GET', 'https://cac-tat.s3.eu-central-1.amazonaws.com/index.html').should(function(response){
+            const {status, statusText, body} = response
+            expect(status).to.equal(200)
+            expect(statusText).to.equal('OK')
+            expect(body).to.include('CAC TAT')
+        })
+    })
+
+    it('Encontre o Gato', function(){
+        cy.get('#cat').should('not.be.visible').invoke('show').should('be.visible')
     })
 
   })
